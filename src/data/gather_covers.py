@@ -1,7 +1,9 @@
+from collections.abc import Iterable
+from time import perf_counter
 from typing import Any
 import asyncio
 import httpx
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from selectolax.parser import HTMLParser
 from urllib.parse import urljoin
@@ -9,13 +11,22 @@ from urllib.parse import urljoin
 
 @dataclass
 class Magazine:
-    name: str | None
-    month: str | None
-    year: int | None
-    image: str | None
+    name: str | None = field(metadata={"dtype": "pl.String"})
+    image_link: str | None = field(metadata={"dtype": "pl.String"})
 
 
 async def fetch_cover_html(client: httpx.AsyncClient, url: str, **kwargs) -> Any:
+    """
+    fetch_cover_html Gathers the HTML Node from a specific page
+
+    Args:
+        client (httpx.AsyncClient): Httpx async client for accessing the website efficiently
+        url (str): Url to query
+        **kwargs: Additional arguments such as page number. Skipped on the first page to allow for redirects
+
+    Returns:
+        Any: HTMLParser object that can be accessed in with the `extract_text` function
+    """
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
@@ -42,23 +53,89 @@ async def fetch_cover_html(client: httpx.AsyncClient, url: str, **kwargs) -> Any
     return html
 
 
+def parse_cover_index_page(html: HTMLParser):
+    covers = html.css("li.indexable-book.listing")
+    for cover in covers:
+        yield urljoin(
+            "https://www.eatyourbooks.com/", cover.css_first("a").attributes["href"]
+        )
+
+
+def parse_individual_cover(html: HTMLParser):
+    new_cover = Magazine(
+        name=extract_text(html, "h1"),
+        image_link=html.css_first("img.img-maxwidth").attributes["src"],
+    )
+    return new_cover
+
+
+# def clean_text(value: str, char_target: str, char_replacement: str) -> str:
+#     char_list = [char_target]
+#     for char in char_list:
+#         if char in value:
+#             value = value.replace(char, char_replacement)
+#     return value
+
+
+def clean_up_data(value: str) -> str:
+    return value.strip()
+
+
+def extract_text(html: HTMLParser, sel: str):
+    """
+    extract_text extract css selector from the page
+
+    Args:
+        html (HTMLParser): HTMLParser object gathered from a previous async call
+        sel (str): CSS selector from the selectolax package
+
+    Returns:
+        str | None: text from the page that matches the CSS selector. If it's not found, return None.
+    """
+    try:
+        text = html.css_first(sel).text()
+        return clean_up_data(text)
+    except AttributeError:
+        return None
+
+
+async def fetch_all_cover_pages(
+    client: httpx.AsyncClient, url: str, page_range: Iterable[int], **kwargs
+):
+    tasks = []
+    for page_num in page_range:
+        tasks.append(asyncio.create_task(fetch_cover_html(client, url, page=page_num)))
+    results = await asyncio.gather(*tasks)
+    return results
+
+
 async def main():
-    # record the starting time
-    # start = time.perf_counter()
-
     async with httpx.AsyncClient(http2=True) as client:
-        tasks = []
-        cover_url = "https://www.eatyourbooks.com/magazines/cooks-illustrated/"
-        for i in range(1, 14):
-            tasks.append(
-                asyncio.create_task(
-                    fetch_cover_html(client=client, url=cover_url, page=i)
-                )
-            )
-        results = await asyncio.gather(*tasks)
+        magazine_cover_links = []
+        magazine_desc = []
 
-    for result in results:
-        print(result)
+        page_range = range(
+            13, 1, -1
+        )  # 13 pages of results - set manually since you get 200 status even on out of bound pages
+        cover_url = "https://www.eatyourbooks.com/magazines/cooks-illustrated/"
+
+        start_time = perf_counter()
+
+        top_level_cover_html = await fetch_all_cover_pages(
+            client, cover_url, page_range
+        )
+
+        for page in top_level_cover_html:
+            magazine_cover_links = parse_cover_index_page(page)
+            for link in magazine_cover_links:
+                print(link)
+                individual_cover_html = await fetch_cover_html(client, link)
+                magazine_desc.append(parse_individual_cover(individual_cover_html))
+
+        print(magazine_desc)
+        end_time = perf_counter()
+
+        print(f"Total time to scrape: {(end_time - start_time):.2f} seconds")
 
 
 if __name__ == "__main__":

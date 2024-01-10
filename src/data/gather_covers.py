@@ -11,8 +11,8 @@ from urllib.parse import urljoin
 
 @dataclass
 class Magazine:
-    name: str | None = field(metadata={"dtype": "pl.String"})
-    image_link: str | None = field(metadata={"dtype": "pl.String"})
+    name: str | None = field(metadata={"dtype": "pl.String"})  # Polars metadata
+    image_link: str | None = field(metadata={"dtype": "pl.String"})  # Polars metadata
 
 
 async def fetch_cover_html(client: httpx.AsyncClient, url: str, **kwargs) -> Any:
@@ -53,7 +53,18 @@ async def fetch_cover_html(client: httpx.AsyncClient, url: str, **kwargs) -> Any
     return html
 
 
-def parse_cover_index_page(html: HTMLParser):
+def parse_cover_index_page(html: HTMLParser) -> Any:
+    """
+    parse_cover_index_page Generate an HTMLParser object to traverse for links
+
+    parse_cover_index_page will return a generator object that is iterable object to save on memory. You will only get values out once you iterate through the return value.
+
+    Args:
+        html (HTMLParser): HTMLParser object that comes from the fetch_cover_html() method
+
+    Yields:
+        str: Generator object that can be iterated over
+    """
     covers = html.css("li.indexable-book.listing")
     for cover in covers:
         yield urljoin(
@@ -61,20 +72,23 @@ def parse_cover_index_page(html: HTMLParser):
         )
 
 
-def parse_individual_cover(html: HTMLParser):
+def parse_individual_cover(html: HTMLParser) -> Magazine:
+    """
+    parse_individual_cover Method for accessing individual magazine names
+
+    This method creates a new Magazine dataclass for each url that includes the name and a link to the image for later processing
+
+    Args:
+        html (HTMLParser): HTMLParser object that comes from the fetch_cover_html() method
+
+    Returns:
+        Magazine: Magazine dataclass that inclues "name" and "image_link" as attributes
+    """
     new_cover = Magazine(
         name=extract_text(html, "h1"),
         image_link=html.css_first("img.img-maxwidth").attributes["src"],
     )
     return new_cover
-
-
-# def clean_text(value: str, char_target: str, char_replacement: str) -> str:
-#     char_list = [char_target]
-#     for char in char_list:
-#         if char in value:
-#             value = value.replace(char, char_replacement)
-#     return value
 
 
 def clean_up_data(value: str) -> str:
@@ -83,7 +97,7 @@ def clean_up_data(value: str) -> str:
 
 def extract_text(html: HTMLParser, sel: str):
     """
-    extract_text extract css selector from the page
+    extract_text Extract css selector from the page
 
     Args:
         html (HTMLParser): HTMLParser object gathered from a previous async call
@@ -115,7 +129,7 @@ async def main():
         magazine_desc = []
 
         page_range = range(
-            13, 1, -1
+            13, 0, -1
         )  # 13 pages of results - set manually since you get 200 status even on out of bound pages
         cover_url = "https://www.eatyourbooks.com/magazines/cooks-illustrated/"
 

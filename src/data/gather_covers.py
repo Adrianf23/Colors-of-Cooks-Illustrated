@@ -129,7 +129,7 @@ async def main():
         magazine_desc = []
 
         page_range = range(
-            13, 0, -1
+            13, 1, -1
         )  # 13 pages of results - set manually since you get 200 status even on out of bound pages
         cover_url = "https://www.eatyourbooks.com/magazines/cooks-illustrated/"
 

@@ -1,5 +1,4 @@
 from collections.abc import Iterable
-from time import perf_counter
 from typing import Any
 import asyncio
 import httpx
@@ -7,12 +6,13 @@ from dataclasses import dataclass, field
 
 from selectolax.parser import HTMLParser
 from urllib.parse import urljoin
+import polars as pl
 
 
 @dataclass
 class Magazine:
-    name: str | None = field(metadata={"dtype": "pl.String"})  # Polars metadata
-    image_link: str | None = field(metadata={"dtype": "pl.String"})  # Polars metadata
+    name: str | None = field(metadata={"dtype": pl.Utf8})
+    image_link: str | None = field(metadata={"dtype": pl.Utf8})
 
 
 async def fetch_cover_html(client: httpx.AsyncClient, url: str, **kwargs) -> Any:
@@ -123,34 +123,5 @@ async def fetch_all_cover_pages(
     return results
 
 
-async def main():
-    async with httpx.AsyncClient(http2=True) as client:
-        magazine_cover_links = []
-        magazine_desc = []
-
-        page_range = range(
-            13, 0, -1
-        )  # 13 pages of results - set manually since you get 200 status even on out of bound pages
-        cover_url = "https://www.eatyourbooks.com/magazines/cooks-illustrated/"
-
-        start_time = perf_counter()
-
-        top_level_cover_html = await fetch_all_cover_pages(
-            client, cover_url, page_range
-        )
-
-        for page in top_level_cover_html:
-            magazine_cover_links = parse_cover_index_page(page)
-            for link in magazine_cover_links:
-                print(link)
-                individual_cover_html = await fetch_cover_html(client, link)
-                magazine_desc.append(parse_individual_cover(individual_cover_html))
-
-        print(magazine_desc)
-        end_time = perf_counter()
-
-        print(f"Total time to scrape: {(end_time - start_time):.2f} seconds")
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
+def parse_dtype(self, attribute_name: str) -> dict:
+    return {attribute_name: self.__dataclass_fields__[attribute_name].metadata["dtype"]}

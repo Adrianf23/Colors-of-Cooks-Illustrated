@@ -1,11 +1,11 @@
-import asyncio
-from dataclasses import dataclass, field
-from time import perf_counter
-
-import httpx
-import gather_covers
-
+from dataclasses import dataclass, field, fields
 import polars as pl
+
+import asyncio
+import httpx
+
+import gather_covers
+from time import perf_counter
 
 
 @dataclass

@@ -2,7 +2,7 @@ from collections.abc import Iterable
 from typing import Any
 import asyncio
 import httpx
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 
 from selectolax.parser import HTMLParser
 from urllib.parse import urljoin
@@ -53,23 +53,50 @@ async def fetch_cover_html(client: httpx.AsyncClient, url: str, **kwargs) -> Any
     return html
 
 
-def parse_cover_index_page(html: HTMLParser) -> Any:
+async def fetch_all_cover_pages(
+    client: httpx.AsyncClient, url: str, page_range: Iterable[int], **kwargs
+) -> list[HTMLParser]:
+    """
+    fetch_all_cover_pages Async client that returns a list of HTMLParser objects
+
+    Takes in an async client, url and page range to asynchronously return a list of HTMLParse objects corresping to each page
+
+    Args:
+        client (httpx.AsyncClient): Async client from the httpx library
+        url (str): url to parse
+        page_range (Iterable[int]): list of page numbers to loop through
+
+    Returns:
+        _type_: _description_
+    """
+    tasks = []
+    for page_num in page_range:
+        tasks.append(asyncio.create_task(fetch_cover_html(client, url, page=page_num)))
+    results = await asyncio.gather(*tasks)
+    return results
+
+
+page_range = range(
+    13, 0, -1
+)  # 13 pages of results - set manually since you get 200 status even on out of bound pages.
+
+
+def parse_cover_index_page(url: str, html: HTMLParser) -> Any:
     """
     parse_cover_index_page Generate an HTMLParser object to traverse for links
 
-    parse_cover_index_page will return a generator object that is iterable object to save on memory. You will only get values out once you iterate through the return value.
+    Return a generator object that is iterable object to save on memory.
 
     Args:
+        url (str): URL to parse
         html (HTMLParser): HTMLParser object that comes from the fetch_cover_html() method
 
     Yields:
-        str: Generator object that can be iterated over
+        str: Generator object of url hrefs
     """
     covers = html.css("li.indexable-book.listing")
     for cover in covers:
-        yield urljoin(
-            "https://www.eatyourbooks.com/", cover.css_first("a").attributes["href"]
-        )
+        yield urljoin(url, cover.css_first("a").attributes["href"])
 
 
 def parse_individual_cover(html: HTMLParser) -> Magazine:
@@ -95,7 +122,7 @@ def clean_up_data(value: str) -> str:
     return value.strip()
 
 
-def extract_text(html: HTMLParser, sel: str):
+def extract_text(html: HTMLParser, sel: str) -> str | None:
     """
     extract_text Extract css selector from the page
 
@@ -113,15 +140,31 @@ def extract_text(html: HTMLParser, sel: str):
         return None
 
 
-async def fetch_all_cover_pages(
-    client: httpx.AsyncClient, url: str, page_range: Iterable[int], **kwargs
-):
-    tasks = []
-    for page_num in page_range:
-        tasks.append(asyncio.create_task(fetch_cover_html(client, url, page=page_num)))
-    results = await asyncio.gather(*tasks)
-    return results
+def parse_dtype(self, attribute_name: str) -> dict[str, str]:
+    """
+    parse_dtype Parse the dtype metadata from a dataclass
 
+    Args:
+        attribute_name (str): Attribute in metadata of dataclass
 
-def parse_dtype(self, attribute_name: str) -> dict:
+    Returns:
+        dict: Dictionary of metadata attribute and accompanying dtype
+    """
     return {attribute_name: self.__dataclass_fields__[attribute_name].metadata["dtype"]}
+
+
+def gather_dtype(dataclass_obj: Magazine) -> dict[str, str]:
+    """
+    gather_dtype Create a dictionary of dtypes from the dataclass metadata property
+
+    Args:
+        dataclass_obj (Magazine): Dataclass object of type Magazine
+
+    Returns:
+        dict[str, str]: Dictionary of {field: datatype} for each field in the Magazine dataclass
+    """
+    dtype_dict = {}
+    field_names = [field.name for field in fields(dataclass_obj)]
+    for field in field_names:
+        dtype_dict.update(parse_dtype(dataclass_obj, field))
+    return dtype_dict

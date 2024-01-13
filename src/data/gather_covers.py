@@ -81,13 +81,14 @@ page_range = range(
 )  # 13 pages of results - set manually since you get 200 status even on out of bound pages.
 
 
-def parse_cover_index_page(html: HTMLParser) -> Any:
+def parse_cover_index_page(url: str, html: HTMLParser) -> Any:
     """
     parse_cover_index_page Generate an HTMLParser object to traverse for links
 
     Return a generator object that is iterable object to save on memory.
 
     Args:
+        url (str): URL to parse
         html (HTMLParser): HTMLParser object that comes from the fetch_cover_html() method
 
     Yields:
@@ -95,9 +96,7 @@ def parse_cover_index_page(html: HTMLParser) -> Any:
     """
     covers = html.css("li.indexable-book.listing")
     for cover in covers:
-        yield urljoin(
-            "https://www.eatyourbooks.com/", cover.css_first("a").attributes["href"]
-        )
+        yield urljoin(url, cover.css_first("a").attributes["href"])
 
 
 def parse_individual_cover(html: HTMLParser) -> Magazine:

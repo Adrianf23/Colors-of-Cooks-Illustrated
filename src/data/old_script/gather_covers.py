@@ -1,12 +1,11 @@
-from collections.abc import Iterable
-from typing import Any
 import asyncio
 import httpx
-from dataclasses import dataclass, field, fields
-
-from selectolax.parser import HTMLParser
-from urllib.parse import urljoin
 import polars as pl
+from collections.abc import Iterable
+from dataclasses import dataclass, field, fields
+from selectolax.parser import HTMLParser
+from typing import Any
+from urllib.parse import urljoin
 
 
 @dataclass

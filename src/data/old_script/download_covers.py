@@ -1,10 +1,7 @@
+import httpx
+import polars as pl
 from functools import reduce
 from pathlib import Path
-
-import polars as pl
-
-import httpx
-
 from typing import Any
 
 

@@ -1,10 +1,8 @@
 import asyncio
-from pathlib import Path
 import httpx
-
-import polars as pl
-
 import download_covers as dc
+import polars as pl
+from pathlib import Path
 
 
 async def main():

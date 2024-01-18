@@ -1,9 +1,10 @@
-from dataclasses import dataclass, field
-from selectolax.parser import HTMLParser
-from playwright.async_api import async_playwright
 import asyncio
-import src.data.download_magazines as dm
+import httpx
+import download_magazines as dm
 import polars as pl
+from dataclasses import dataclass, field
+from playwright.async_api import async_playwright
+from selectolax.parser import HTMLParser
 
 
 @dataclass
@@ -13,8 +14,9 @@ class Magazine:
 
 
 async def main():
+    # Gather cover links
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)
+        browser = await p.chromium.launch()
         page = await browser.new_page()
 
         base_url = "https://www.americastestkitchen.com/cooksillustrated/magazines"
@@ -36,7 +38,13 @@ async def main():
             results.append(item)
 
         dtype_dict = dm.gather_dtype(Magazine)  # type: ignore
-        df = pl.from_records(results, schema=dtype_dict)  # type: ignore
+        magazine_covers = pl.from_records(results, schema=dtype_dict)  # type: ignore
+        magazine_covers = dm.clean_df_name(magazine_covers)
+        magazine_covers.write_csv("./data/raw/magazine_covers.csv")
+
+    # Download cover links
+    async with httpx.AsyncClient(http2=True) as client:
+        await dm.download_images(magazine_covers, client)
 
 
 if __name__ == "__main__":

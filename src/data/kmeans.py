@@ -21,7 +21,7 @@ def kmeans_img(*, filepath: str | Path, n_clusters: int) -> list[list[pl.Series]
         `n_clusters` (int): Number of centroids
 
     Returns:
-        dict[pl.Series, pl.Series, pl.Series]: image, segmented image, and kmeans labels
+        list[list[pl.Series]]: filepath, image, segmented image, and kmeans labels
     """
     with Image.open(filepath) as img:
         # Convert any RGBA -> RGB

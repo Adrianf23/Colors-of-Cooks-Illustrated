@@ -1,7 +1,8 @@
-from PIL import Image
-from pathlib import Path
 import polars as pl
 import numpy as np
+from pathlib import Path
+from PIL import Image
+
 
 from sklearnex import patch_sklearn
 

@@ -37,8 +37,8 @@ async def main():
         for item in dm.parse_item(page_text):
             results.append(item)
 
-        dtype_dict = dm.gather_dtype(Magazine)  # type: ignore
-        magazine_covers = pl.from_records(results, schema=dtype_dict)  # type: ignore
+        dtype_dict = dm.gather_dtype(Magazine)
+        magazine_covers = pl.from_records(results, schema=dtype_dict)
         magazine_covers = dm.clean_df_name(magazine_covers)
         magazine_covers.write_csv("./data/raw/magazine_covers.csv")
 

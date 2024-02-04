@@ -76,38 +76,45 @@ def clean_df_name(df: pl.DataFrame) -> pl.DataFrame:
     Returns:
         `pl.DataFrame`: Polars DataFrame
     """
-    return df.with_columns(
-        year=("1 " + pl.col("name").str.replace("/.* ", ""))
-        .str.to_datetime("%d %B %Y")
-        .dt.year(),
-        start_month_num=("1 " + pl.col("name").str.replace("/.* ", ""))
-        .str.to_datetime("%d %B %Y")
-        .dt.month(),
-        end_month_num=pl.col("name")
-        .str.replace(".*/", "1 ")
-        .str.to_datetime("%d %B %Y")
-        .dt.month(),
-        start_month_str=pl.col("name").str.extract(r"(\w+)\/"),
-        end_month_str=pl.col("name").str.extract(r"\/(\w+)"),
-        cleaned_link=pl.col("image_link").str.replace(r"\bupload\b(.+?)\/", "upload/"),
-        # Some of the magazines are blank and all have the same link
-        is_blank_cover=pl.when(
-            pl.col("image_link").str.contains(
-                r"https://res.cloudinary.com/hksqkdlah/image/upload/Recipe_Default_zbu7tq"
-            )
+    return (
+        df.with_columns(
+            year=("1 " + pl.col("name").str.replace("/.* ", ""))
+            .str.to_datetime("%d %B %Y")
+            .dt.year(),
+            start_month_num=("1 " + pl.col("name").str.replace("/.* ", ""))
+            .str.to_datetime("%d %B %Y")
+            .dt.month(),
+            end_month_num=pl.col("name")
+            .str.replace(".*/", "1 ")
+            .str.to_datetime("%d %B %Y")
+            .dt.month(),
+            start_month_str=pl.col("name").str.extract(r"(\w+)\/"),
+            end_month_str=pl.col("name").str.extract(r"\/(\w+)"),
+            cleaned_link=pl.col("image_link").str.replace(
+                r"\bupload\b(.+?)\/", "upload/"
+            ),
         )
-        .then(pl.lit(1, dtype=pl.Int8))
-        .otherwise(pl.lit(0, dtype=pl.Int8)),
-    ).select(
-        pl.col("*").exclude("image_link"),
-        filename=pl.concat_str(
-            [
-                pl.col("year"),
-                pl.col("start_month_num"),
-                pl.col("end_month_num"),
-            ],
-            separator="_",
-        ),
+        .with_columns(
+            # Some of the magazines are blank and all have the same link
+            is_blank_cover=pl.when(
+                pl.col("cleaned_link").str.contains(
+                    r"https://res.cloudinary.com/hksqkdlah/image/upload/Recipe_Default_zbu7tq"
+                )
+            )
+            .then(pl.lit(1, dtype=pl.Int8))
+            .otherwise(pl.lit(0, dtype=pl.Int8))
+        )
+        .select(
+            pl.col("*").exclude("image_link"),
+            filename=pl.concat_str(
+                [
+                    pl.col("year"),
+                    pl.col("start_month_num"),
+                    pl.col("end_month_num"),
+                ],
+                separator="_",
+            ),
+        )
     )
 
 

@@ -20,7 +20,7 @@ def main():
             print("Exporting to parquet")
             print("....................")
             pl.from_records(
-                kmeans_img(filepath=files[i], n_clusters=2), schema=["filepath", "og_image", "segmented_image", "image_labels"]
+                kmeans_img(filepath=v, n_clusters=2), schema=["filepath", "og_image", "segmented_image", "image_labels"]
             ).write_parquet(
                 file=f"{parquet_filepath/v.split("\\")[-1].strip(".jpg")}_cover.parquet", compression="zstd", compression_level=20, use_pyarrow=True
             )

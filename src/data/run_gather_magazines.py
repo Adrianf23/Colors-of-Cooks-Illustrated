@@ -16,13 +16,13 @@ class Magazine:
 async def main():
     # Gather cover links
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)
+        browser = await p.chromium.launch()
         page = await browser.new_page()
 
         base_url: str = "https://www.americastestkitchen.com/cooksillustrated/magazines"
 
         await page.goto(base_url)
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(1)
         print("Visiting America's Test Kitchen")
 
         load_more_button = page.locator("button.Button-module_fill__UsoCz")  # type: ignore

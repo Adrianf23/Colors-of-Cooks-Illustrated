@@ -19,7 +19,7 @@ async def main():
         browser = await p.chromium.launch(headless=False)
         page = await browser.new_page()
 
-        base_url = "https://www.americastestkitchen.com/cooksillustrated/magazines"
+        base_url: str = "https://www.americastestkitchen.com/cooksillustrated/magazines"
 
         await page.goto(base_url)
         await asyncio.sleep(0.1)
@@ -30,16 +30,16 @@ async def main():
         while await load_more_button.count() > 0:
             await page.click("button.Button-module_fill__UsoCz")
 
-        page_text = HTMLParser(await page.content())
+        page_text: HTMLParser = HTMLParser(await page.content())
         await browser.close()
 
-        results = []
+        results: list[Magazine] = []
         for item in dm.parse_item(page_text):
             results.append(item)
 
-        dtype_dict = dm.gather_dtype(Magazine)
-        magazine_covers = pl.from_records(results, schema=dtype_dict)
-        magazine_covers = dm.clean_df_name(magazine_covers)
+        dtype_dict: dict[str, str] = dm.gather_dtype(Magazine)
+        magazine_covers: pl.DataFrame = pl.from_records(results, schema=dtype_dict)
+        magazine_covers: pl.DataFrame = dm.clean_df_name(magazine_covers)
         magazine_covers.write_csv("./data/raw/magazine_covers.csv")
 
     # Download cover links

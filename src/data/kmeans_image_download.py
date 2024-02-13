@@ -33,7 +33,7 @@ def main():
             ).write_parquet(
                 file=f"{file_header}_cover.parquet",
                 compression="zstd",
-                compression_level=20,
+                compression_level=22,
                 use_pyarrow=True,
             )
             print("....................")

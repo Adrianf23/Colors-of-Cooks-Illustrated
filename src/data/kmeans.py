@@ -1,6 +1,6 @@
 import polars as pl
 import numpy as np
-from pathlib import Path
+from pathlib import Path, PurePath
 from PIL import Image
 
 
@@ -23,6 +23,8 @@ def kmeans_img(*, filepath: str | Path, n_clusters: int) -> list[list[pl.Series]
     Returns:
         list[list[pl.Series]]: filepath, image, segmented image, and kmeans labels
     """
+    file_stem: str = PurePath(filepath).stem
+
     with Image.open(filepath) as img:
         # Convert any RGBA -> RGB
         if np.asarray(img).shape[2] == 4:
@@ -34,7 +36,8 @@ def kmeans_img(*, filepath: str | Path, n_clusters: int) -> list[list[pl.Series]
         segmented_image = kmeans.cluster_centers_[kmeans.labels_].reshape(-1, 3)
 
     return [
-        [pl.Series("filepath", filepath, dtype=pl.List(pl.String))],
+        [filepath],
+        [file_stem],
         [pl.Series("og_image", X, dtype=pl.List(pl.UInt8))],
         [pl.Series("segmented_image", segmented_image, dtype=pl.List(pl.UInt8))],
         [pl.Series("image_labels", kmeans.cluster_centers_, dtype=pl.List(pl.UInt8))],

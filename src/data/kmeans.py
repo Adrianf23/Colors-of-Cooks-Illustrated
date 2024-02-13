@@ -1,3 +1,4 @@
+from typing import Any
 import polars as pl
 import numpy as np
 from pathlib import Path, PurePath
@@ -11,7 +12,7 @@ patch_sklearn()
 from sklearn.cluster import KMeans
 
 
-def kmeans_img(*, filepath: str | Path, n_clusters: int) -> list[list[pl.Series]]:
+def kmeans_img(*, filepath: str | Path, n_clusters: int) -> list[list[Any]]:
     """
     kmeans_img Generate kmeans image classifier
 

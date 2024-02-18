@@ -12,7 +12,7 @@ patch_sklearn()
 from sklearn.cluster import KMeans
 
 
-def kmeans_img(*, filepath: str | Path, n_clusters: int) -> list[list[Any]]:
+def kmeans_img(*, filepath: str | Path, n_clusters: int) -> np.ndarray:
     """
     kmeans_img Generate kmeans image classifier
 
@@ -24,7 +24,7 @@ def kmeans_img(*, filepath: str | Path, n_clusters: int) -> list[list[Any]]:
     Returns:
         list[list[pl.Series]]: filepath, image, segmented image, and kmeans labels
     """
-    file_stem: str = PurePath(filepath).stem
+    # file_stem: str = PurePath(filepath).stem
 
     with Image.open(filepath) as img:
         # Convert any RGBA -> RGB
@@ -38,10 +38,4 @@ def kmeans_img(*, filepath: str | Path, n_clusters: int) -> list[list[Any]]:
             -1, 3
         )
 
-    return [
-        [filepath],
-        [file_stem],
-        [pl.Series("og_image", X, dtype=pl.List(pl.UInt8))],
-        [pl.Series("segmented_image", segmented_image, dtype=pl.List(pl.UInt8))],
-        [pl.Series("image_labels", kmeans.cluster_centers_, dtype=pl.List(pl.UInt8))],
-    ]
+    return segmented_image

@@ -10,37 +10,33 @@ def main():
         str(path) for path in image_filepath.rglob("*") if path.is_file()
     ]
 
+    # TODO: Load in the magazine_cover.csv and filter for the nonblank images
+    # TODO: Filter the `files` list to only return the images we will be using
+
     kmean_folder: str = input(
         str("Name the folder where the KMeans data will be stored: ")
     )
-    parquet_filepath: Path = Path.cwd() / "data" / "interim" / kmean_folder
-    Path.mkdir(parquet_filepath, exist_ok=True)
-    print(f"KMeans data will be saved here: {parquet_filepath}")
+    csv_filepath: Path = Path.cwd() / "data" / "interim" / kmean_folder
+    Path.mkdir(csv_filepath, exist_ok=True)
+    print(f"KMeans data will be saved here: {csv_filepath}")
 
     start: float = perf_counter()
 
     for file in files:
-        file_header = PurePath(file).stem
-        if Path(f"{parquet_filepath} / {file_header}_cover.parquet").exists() == True:
+        file_header: str = PurePath(file).stem
+        # TODO: Run kmeans function here and just save the segmented image
+        segmented_image, file_info = (kmeans_img(filepath=file, n_clusters=10),)
+        if Path(f"{csv_filepath} / {file_header}_cover.csv").exists() == True:
             continue
         else:
             print(f"New file: {file}")
-            print("Exporting to parquet")
+            print("Exporting to csv")
             print("....................")
             pl.from_records(
-                kmeans_img(filepath=file, n_clusters=10),
-                schema=[
-                    "filepath",
-                    "filename",
-                    "og_image",
-                    "segmented_image",
-                    "image_labels",
-                ],
-            ).write_parquet(
-                file=f"{parquet_filepath}/{file_header}_cover.parquet",
-                compression="zstd",
-                compression_level=22,
-                use_pyarrow=True,
+                file_info,
+                schema=["filepath", "filename"],
+            ).write_csv(
+                file=f"{csv_filepath}/{file_header}_cover.csv",
             )
             print("....................")
     end: float = perf_counter()

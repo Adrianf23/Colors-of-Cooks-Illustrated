@@ -25,20 +25,9 @@ def main():
     for file in files:
         file_header: str = PurePath(file).stem
         # TODO: Run kmeans function here and just save the segmented image
-        segmented_image, file_info = (kmeans_img(filepath=file, n_clusters=10),)
-        if Path(f"{csv_filepath} / {file_header}_cover.csv").exists() == True:
-            continue
-        else:
-            print(f"New file: {file}")
-            print("Exporting to csv")
-            print("....................")
-            pl.from_records(
-                file_info,
-                schema=["filepath", "filename"],
-            ).write_csv(
-                file=f"{csv_filepath}/{file_header}_cover.csv",
-            )
-            print("....................")
+        segmented_image = kmeans_img(filepath=file, n_clusters=10)
+
+        # TODO: Run logic for saving the top 10 images
     end: float = perf_counter()
     print("Finished exporting all files")
     print(f"End of script. Took {end-start} seconds.")

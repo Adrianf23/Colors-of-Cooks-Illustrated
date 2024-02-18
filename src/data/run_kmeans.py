@@ -88,7 +88,7 @@ def main():
             )
     end: float = perf_counter()
     print("Finished exporting all files")
-    print(f"End of script. Took {end-start} seconds.")
+    print(f"End of script. Took {end-start} seconds.")  # Took 1260.91s or 21 minutes
 
 
 if __name__ == "__main__":

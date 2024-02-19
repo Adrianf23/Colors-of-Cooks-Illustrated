@@ -5,20 +5,8 @@ from pathlib import Path
 from PIL import Image
 from re import split
 
-def make_gif(frame_folder, duration=500, loop=0):
-    frames = [Image.open(image) for image in glob.glob(f"{frame_folder}/*.webp")]
-    frame_one = frames[0]
-    frame_one.save(
-        "output.gif",
-        format="GIF",
-        append_images=frames[1:],
-        save_all=True,
-        duration=duration,
-        loop=loop,
-    )
 
-
-def get_filtered_images():
+def get_filtered_images() -> list[str]:
     og_img_filepath: Path = Path.cwd() / "data" / "raw" / "cooks-illustrated"
     files: list[tuple[str, str]] = [
         (str(path), path.stem) for path in og_img_filepath.rglob("*") if path.is_file()
@@ -49,3 +37,41 @@ def transfer_files(source: list[str] | Path, destination_path: str | Path):
         for file in source.iterdir():
             if file.is_file():
                 shutil.copy(file, f"{destination_path}/{split(r"-square", file.stem)[0]}{file.suffix}")
+
+
+def resize_image(image, size):
+    return image.resize(size, Image.LANCZOS)
+
+def combine_images(image_paths):
+    images = [resize_image(Image.open(image), (1000, 1000)) for image in image_paths]
+    widths, heights = zip(*(i.size for i in images))
+
+    total_width = sum(widths)
+    max_height = max(heights)
+
+    new_im = Image.new('RGB', (total_width, max_height))
+
+    x_offset = 0
+    for im in images:
+        new_im.paste(im, (x_offset, 0))
+        x_offset += im.size[0]
+
+    return new_im
+
+def make_gif(frame_folder: str | Path, output_file: Path, duration: int=1000, loop: int=0):
+    jpg_paths = glob.glob(f"{frame_folder}/*.jpg")
+    webp_paths = glob.glob(f"{frame_folder}/*.webp")
+
+    frames = []
+    for i in range(0, min(len(jpg_paths), len(webp_paths)) - 1, 2):
+        frames.append(combine_images([jpg_paths[i], webp_paths[i]]))
+
+    frame_one: Image.Image = frames[0]
+    frame_one.save(
+        output_file,
+        format="GIF",
+        append_images=frames[1:],
+        save_all=True,
+        duration=duration,
+        loop=loop,
+    )

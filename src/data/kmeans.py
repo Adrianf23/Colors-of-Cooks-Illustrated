@@ -41,7 +41,7 @@ def kmeans_img(
 
 
 def get_color_labels(color_labels: np.ndarray) -> list[tuple]:
-    color_indices: list[int] = [1, 0, 2, 9]
+    color_indices: list[int] = [1, 0, 2, 6]
     color_counter: list[tuple] = Counter(color_labels).most_common(10)
 
     color_square_list: list[tuple] = [color_counter[i][0] for i in color_indices]

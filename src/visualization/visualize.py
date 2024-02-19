@@ -1,5 +1,3 @@
-from re import split
-import polars as pl
 from src.visualization.gif_maker import get_filtered_images
 from src.visualization.gif_maker import make_gif
 from src.visualization.gif_maker import transfer_files
@@ -15,7 +13,9 @@ def main():
     magazine_squares_filepath = Path.cwd() / "data" / "processed" / "kmeans-squares"
     transfer_files(source=magazine_squares_filepath, destination_path=destination_path)
 
-    # make_gif(og_img_filepath)
+    final_img_filepath = Path.cwd() / "reports" / "figures" / "magazine-covers.gif"
+
+    make_gif(frame_folder=destination_path, output_file=final_img_filepath)
 
 
 if __name__ == "__main__":

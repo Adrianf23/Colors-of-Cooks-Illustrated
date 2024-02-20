@@ -3,6 +3,8 @@ The Covers of Cook's Illustrated
 
 A color analysis of the covers of Cook's Illustrated from 1992-2024 using k-means clustering.
 
+![Animated gif of magazines with their kmeans representation](https://github.com/Adrianf23/Colors-of-Cooks-Illustrated/blob/main/reports/figures/magazine-covers.gif))
+
 Project Organization
 ------------
 

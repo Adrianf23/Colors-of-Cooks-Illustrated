@@ -2,7 +2,7 @@ import glob
 import polars as pl
 import shutil
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageSequence
 from re import split
 
 
@@ -75,3 +75,19 @@ def make_gif(frame_folder: str | Path, output_file: Path, duration: int=1000, lo
         duration=duration,
         loop=loop,
     )
+    
+def compress_gif(image: str | Path, output_file: Path):
+    im: Image.Image = Image.open(image)
+
+    output_width: int = int(im.width * 0.7) 
+    output_height: int = int(im.height * 0.7) 
+
+    frames = ImageSequence.Iterator(im)
+
+    resized_frames = [frame.copy().resize((output_width, output_height), Image.LANCZOS) for frame in frames]
+
+    resized_frames[0].save(output_file, save_all=True, append_images=resized_frames[1:], loop=0, duration=im.info['duration'])
+
+    
+    
+    

@@ -1,0 +1,21 @@
+name: cooks-illustrated
+channels:
+  - conda-forge
+  - Microsoft
+  - defaults
+dependencies:
+  - python
+  - pipreqs
+  - jupyter-black
+  - httpx
+  - graphviz
+  - matplotlib
+  - numpy
+  - Pillow
+  - playwright
+  - polars
+  - scikit-learn
+  - scikit-learn-intelex
+  - selectolax
+  - setuptools
+prefix: C:\Users\adrian\miniconda3\envs\cooks-illustrated

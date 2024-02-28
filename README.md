@@ -3,40 +3,48 @@ The Covers of Cook's Illustrated
 
 A color analysis of the covers of Cook's Illustrated from 1992-2024 using k-means clustering.
 
-![Animated gif of magazines with their kmeans representation](https://github.com/Adrianf23/Colors-of-Cooks-Illustrated/blob/main/reports/figures/magazine-covers.gif)
+![Animated gif of magazines with their kmeans representation](https://github.com/Adrianf23/Colors-of-Cooks-Illustrated/blob/main/reports/figures/compressed-magazine-covers.gif)
+
+
+
 
 Project Organization
 ------------
 
     ├── LICENSE
     ├── README.md          <- The top-level README for developers using this project.
-    ├── data
+    ├── data (generated with commands)
     │   ├── external       <- Data from third party sources.
     │   ├── interim        <- Intermediate data that has been transformed.
     │   ├── processed      <- The final, canonical data sets for modeling.
     │   └── raw            <- The original, immutable data dump.
-    │
-    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                         the creator's initials, and a short `-` delimited description, e.g.
-    │                         `1.0-jqp-initial-data-exploration`.
     │
     ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
     │
     ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
     │   └── figures        <- Generated graphics and figures to be used in reporting
     │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `pip freeze > requirements.txt`
+    ├── conda-lock.yml     <- The lock file for reproducing this project, e.g.
+    │                         generated with `conda-lock lock -f environment.yml`
     │
-    ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
+    │
+    ├── environment.yml    <- The environment file for reproducing this project, e.g.
+    │                         generated with `conda env export --from-history -f environment.yml -c conda-forge`
+    │
     ├── src                <- Source code for use in this project.
+    |   ├── old_script     <- Original scripts to download data
     │   ├── __init__.py    <- Makes src a Python module
     │   │
     │   ├── data           <- Scripts to download or generate data
     │   │   └── make_dataset.py
+    |   |   └── gather_magazines.py
+    |   |   └── kmeans.py
+    |   |   └── run_gather_magazines.py
+    |   |   └── run_kmeans.py
     │   │
     │   │
     │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
+    │       └── gif_maker.py
     │       └── visualize.py
 
 --------
@@ -45,3 +53,4 @@ Disclaimer: This project contains copyrighted material, the use of which has not
 
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
+

@@ -47,6 +47,22 @@ Project Organization
     │       └── gif_maker.py
     │       └── visualize.py
 
+Get Started
+--------
+Clone the repository
+
+- HTTPS: `git clone https://github.com/Adrianf23/Colors-of-Cooks-Illustrated.git`
+- SSH: `git clone git@github.com:Adrianf23/Colors-of-Cooks-Illustrated.git`
+
+Create an environment with conda-lock. I use micromamba, but you can substitute conda or mamba. 
+
+- `micromamba create -n [ENV_NAME] -c conda-forge conda-lock --yes`
+
+Download the necessary packages using conda-lock
+
+- `conda-lock install --name [ENV_NAME_2] conda-lock.yml`
+
+
 --------
 
 Disclaimer: This project contains copyrighted material, the use of which has not been endorsed by America's Test Kitchen/Marquee Branchs. I believe my exploratory use meets the “fair use” prerequisite provided for in section 107 of the US Copyright Law. I do not claim ownership of any images and no images are for sale. The cover images shown are copyright by the original publisher.

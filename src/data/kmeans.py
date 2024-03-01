@@ -1,19 +1,16 @@
 from collections import Counter
-import numpy as np
 from pathlib import Path
+
+import numpy as np
 from PIL import Image
-
-
 from sklearnex import patch_sklearn
 
-patch_sklearn()
+patch_sklearn()  # Comment out if you don't want to use this
 
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans  # noqa: E402
 
 
-def kmeans_img(
-    *, filepath: str | Path, n_clusters: int
-) -> tuple[np.ndarray, np.ndarray]:
+def kmeans_img(filepath: str | Path, n_clusters: int) -> tuple[np.ndarray, np.ndarray]:
     """
     kmeans_img Generate kmeans image classifier
 
@@ -23,7 +20,7 @@ def kmeans_img(
         `n_clusters` (int): Number of centroids
 
     Returns:
-        list[list[pl.Series]]: filepath, image, segmented image, and kmeans labels
+        tuple[np.ndarray, np.ndarray]: centroids and image labels
     """
 
     with Image.open(filepath) as img:
@@ -41,6 +38,16 @@ def kmeans_img(
 
 
 def get_color_labels(color_labels: np.ndarray) -> list[tuple]:
+    """
+    get_color_labels Extract 4 colors from KMeans labels
+
+    Args:
+        color_labels (np.ndarray): labels from kmeans_img function
+
+    Returns:
+        list[tuple]: list of RGB values for each of the 4 colors
+    """
+
     color_indices: list[int] = [1, 0, 2, 6]
     color_counter: list[tuple] = Counter(color_labels).most_common(10)
 

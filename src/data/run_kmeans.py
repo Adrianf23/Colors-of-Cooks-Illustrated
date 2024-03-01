@@ -1,9 +1,9 @@
+from pathlib import Path
+
+import kmeans as km
 import matplotlib.pyplot as plt
 import polars as pl
-from kmeans import get_color_labels, kmeans_img
-from pathlib import Path
 from PIL import Image, ImageDraw
-from time import perf_counter
 
 
 def main():
@@ -33,17 +33,16 @@ def main():
     Path.mkdir(color_square_filepath, exist_ok=True)
     print(f"Segmented images will be saved here: {color_square_filepath}")
 
-    start: float = perf_counter()
     for file in filtered_files:
         if (
             Path(f"{color_square_filepath}/{Path(file).stem}-square.webp").exists()
-            == True
+            is True
         ):
             continue
         else:
-            color_palette, color_labels = kmeans_img(filepath=file, n_clusters=10)
+            color_palette, color_labels = km.kmeans_img(filepath=file, n_clusters=10)
 
-            color_square_list: list = get_color_labels(color_labels)
+            color_square_list: list = km.get_color_labels(color_labels)
 
             image: Image.Image = Image.new("RGB", (200, 200), "white")
             draw = ImageDraw.Draw(image)
@@ -86,9 +85,7 @@ def main():
                 pad_inches=0,
                 dpi=300,
             )
-    end: float = perf_counter()
     print("Finished exporting all files")
-    print(f"End of script. Took {end-start} seconds.")  # Took 1260.91s or 21 minutes
 
 
 if __name__ == "__main__":

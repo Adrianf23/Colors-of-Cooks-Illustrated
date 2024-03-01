@@ -1,9 +1,10 @@
-import httpx
-import polars as pl
 from dataclasses import dataclass, field, fields
 from pathlib import Path
-from selectolax.parser import HTMLParser
 from typing import Any, Generator
+
+import httpx
+import polars as pl
+from selectolax.parser import HTMLParser
 
 
 @dataclass
@@ -22,7 +23,7 @@ def parse_item(html_page: HTMLParser) -> Generator[Magazine, Any, None]:
     Yields:
         `Generator[Magazine, Any, None]`: Generator object of image and alt text
     """
-    data = html_page.css("picture.StandardCardImage_cardImage__pH9Yg")
+    data: list = html_page.css("picture.StandardCardImage_cardImage__pH9Yg")
     for item in data:
         yield (
             Magazine(
@@ -55,17 +56,16 @@ def gather_dtype(dataclass_obj: Magazine) -> dict[str, str]:
     Returns:
         `dict[str, str]`: Dictionary of {field: datatype} for each field in the Magazine dataclass
     """
-    dtype_dict = {}
-    field_names = [field.name for field in fields(dataclass_obj)]
-    for field in field_names:
-        dtype_dict.update(parse_dtype(dataclass_obj, field))
+    dtype_dict: dict[str, str] = {}
+    field_names: list[str] = [field.name for field in fields(dataclass_obj)]
+    for name in field_names:
+        dtype_dict.update(parse_dtype(dataclass_obj, name))
     return dtype_dict
 
 
-# year code source: https://stackoverflow.com/a/77836528/8646265
-
-
-# I chained a select statement after the with_column statement since I needed the year and months to create the filename. Source: https://stackoverflow.com/a/75601785/8646265
+# References for date source code
+# https://stackoverflow.com/a/77836528/8646265
+# https://stackoverflow.com/a/75601785/8646265
 def clean_df_name(df: pl.DataFrame) -> pl.DataFrame:
     """
     clean_df_name Return a polars dataframe with some transformations applied
@@ -95,7 +95,6 @@ def clean_df_name(df: pl.DataFrame) -> pl.DataFrame:
             ),
         )
         .with_columns(
-            # Some of the magazines are blank and all have the same link
             is_blank_cover=pl.when(
                 pl.col("cleaned_link").str.contains(
                     r"https://res.cloudinary.com/hksqkdlah/image/upload/Recipe_Default_zbu7tq"
@@ -125,8 +124,8 @@ def create_img_folder() -> Path:
     Returns:
         `Path`: Pathlib object
     """
-    folder = input(str("Enter a folder to save your images: "))
-    filepath = Path.cwd() / "data" / "raw" / folder
+    folder: str = input(str("Enter a folder to save your images: "))
+    filepath: Path = Path.cwd() / "data" / "raw" / folder
     Path.mkdir(filepath, parents=True, exist_ok=True)
     print(f"Images will be saved here: {filepath}")
     return filepath
@@ -138,20 +137,17 @@ async def download_images(df: pl.DataFrame, client: httpx.AsyncClient) -> None:
 
     Args:
         `df (pl.DataFrame)`: Polars DataFrame
-        `client (httpx.AsyncClient)`: HTTPx AsyncClient
+        `client (httpx.AsyncClient)`: httpx AsyncClient
     """
-    filepath = create_img_folder()
+    filepath: Path = create_img_folder()
 
-    # Inefficient implentation. TODO: Find columnar implementation
     for row in df.iter_rows(named=True):
         filename = (filepath / row["filename"]).with_suffix(".jpg")
         async with client.stream("GET", row["cleaned_link"]) as response:
             print("Downloading the images...")
             with open(filename, "wb") as f:
                 print("Writing data to file")
-                async for chunk in response.aiter_bytes(
-                    chunk_size=4096
-                ):  # abritrary chunk size
+                async for chunk in response.aiter_bytes(chunk_size=4096):
                     f.write(chunk)
         print(f"File saved as {filename}")
 

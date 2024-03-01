@@ -1,8 +1,9 @@
 import asyncio
-import httpx
-import gather_magazines as gm
-import polars as pl
 from dataclasses import dataclass, field
+
+import gather_magazines as gm
+import httpx
+import polars as pl
 from playwright.async_api import async_playwright
 from selectolax.parser import HTMLParser
 
@@ -14,7 +15,6 @@ class Magazine:
 
 
 async def main():
-    # Gather cover links
     async with async_playwright() as p:
         browser = await p.chromium.launch()
         page = await browser.new_page()
@@ -25,7 +25,7 @@ async def main():
         await asyncio.sleep(1)
         print("Visiting America's Test Kitchen")
 
-        load_more_button = page.locator("button.Button-module_fill__UsoCz")  # type: ignore
+        load_more_button = page.locator("button.Button-module_fill__UsoCz")
 
         while await load_more_button.count() > 0:
             await page.click("button.Button-module_fill__UsoCz")
@@ -42,7 +42,6 @@ async def main():
         magazine_covers: pl.DataFrame = gm.clean_df_name(magazine_covers)
         magazine_covers.write_csv("./data/raw/magazine_covers.csv")
 
-    # Download cover links
     async with httpx.AsyncClient(http2=True) as client:
         await gm.download_images(magazine_covers, client)
 

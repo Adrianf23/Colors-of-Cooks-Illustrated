@@ -5,6 +5,7 @@ A color analysis of the covers of Cook's Illustrated from 1992-2024 using k-mean
 
 ![Animated gif of magazines with their kmeans representation](https://github.com/Adrianf23/Colors-of-Cooks-Illustrated/blob/main/reports/figures/compressed-magazine-covers.gif)
 
+*The design changes in later years, so the pattern breaks. Wabi-sabi!
 
 Get Started
 --------

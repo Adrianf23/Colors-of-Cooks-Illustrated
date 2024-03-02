@@ -1,14 +1,13 @@
 from collections import Counter
-import numpy as np
 from pathlib import Path
+
+import numpy as np
 from PIL import Image
-
-
 from sklearnex import patch_sklearn
 
 patch_sklearn()
 
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans  # noqa: E402
 
 
 def kmeans_img(

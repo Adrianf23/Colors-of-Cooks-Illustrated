@@ -32,11 +32,11 @@ Download the images, run the KMeans algorithm and export the images as one final
 
 Overview
 ------------
-This project leveraged several aspects of Data Science and Python aspects that I wanted to dig into.
+This project taught me several aspects of data science and Python that I wanted a deeper understanding of.
 
 - Webscraping/Cleaning Data: With **httpx**, **selectolax** and **playwright**, I scraped 200 magazine covers from the Cook's Illustrated website. 
-  - I used asynchronous functions to decrease the time it took to grab the image links. Then, I streamed all of the images.
-  - I also transformed the image data using predicate and projection pushdown in Polars. This was loaded into parquet files.
+  - I wanted to learn how to make asynchronous functions to decrease the time it took to extract the image links. After that, I made another asyn function to stream in all the images.
+  - I also transformed the image data using predicate and projection pushdown in Polars. This was then loaded into parquet files.
 - Machine Learning: I employed the KMeans clustering algorithm to gather the top 10 most common colors used on the magazine covers. I reduced the processing time by about 30% with the **Intel® Extension for Scikit-learn**.
 - Data Structures: I utilized **Polars** dataframes, **Parquet** files, **NumPy** arrays and **Python** dataclasses to organize my image data.
 - Visualization: I created the image squares and converted/compressed them into gif with **Pillow** and **Matplotlib**. 

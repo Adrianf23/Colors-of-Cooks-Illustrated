@@ -39,7 +39,7 @@ This project taught me several aspects of data science and Python that I wanted 
   - I also transformed the image data using predicate and projection pushdown in Polars. This was then loaded into parquet files.
 - Machine Learning: I employed the KMeans clustering algorithm to gather the top 10 most common colors used on the magazine covers. I reduced the processing time by about 30% with the **Intel® Extension for Scikit-learn**.
 - Data Structures: I utilized **Polars** dataframes, **Parquet** files, **NumPy** arrays and **Python** dataclasses to organize my image data.
-- Visualization: I created the image squares and converted/compressed them into gif with **Pillow** and **Matplotlib**. 
+- Visualization: I created, converted, and compressed the image squares to .gif with **Pillow** and **Matplotlib**. 
 - Environment/Package Management: I wanted to create a reproducible build for this project. I decided to use **conda-lock**, which created 3 cross-platform versions of this project (linux-64, osx-64 and win-64).
 - System Processes: I used **glob**, **shutil**, and **pathlib** to create folders and locate/copy files.  
 

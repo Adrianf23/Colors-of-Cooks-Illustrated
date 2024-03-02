@@ -1,9 +1,10 @@
 import glob
-import polars as pl
 import shutil
 from pathlib import Path
-from PIL import Image, ImageSequence
 from re import split
+
+import polars as pl
+from PIL import Image, ImageSequence
 
 
 def get_filtered_images() -> list[str]:
@@ -31,16 +32,20 @@ def transfer_files(source: list[str] | Path, destination_path: str | Path):
     destination_path = destination_path
 
     if isinstance(source, list):
-        for file in source:  # type: ignore
-            shutil.copy(file, f"{destination_path}/{Path(file).name}")  # type: ignore
+        for file in source:
+            shutil.copy(file, f"{destination_path}/{Path(file).name}")
     else:
         for file in source.iterdir():
             if file.is_file():
-                shutil.copy(file, f"{destination_path}/{split(r"-square", file.stem)[0]}{file.suffix}")
+                shutil.copy(
+                    file,
+                    f"{destination_path}/{split(r"-square", file.stem)[0]}{file.suffix}",
+                )
 
 
 def resize_image(image, size):
     return image.resize(size, Image.LANCZOS)
+
 
 def combine_images(image_paths):
     images = [resize_image(Image.open(image), (1000, 1000)) for image in image_paths]
@@ -49,7 +54,7 @@ def combine_images(image_paths):
     total_width = sum(widths)
     max_height = max(heights)
 
-    new_im = Image.new('RGB', (total_width, max_height))
+    new_im = Image.new("RGB", (total_width, max_height))
 
     x_offset = 0
     for im in images:
@@ -58,7 +63,10 @@ def combine_images(image_paths):
 
     return new_im
 
-def make_gif(frame_folder: str | Path, output_file: Path, duration: int=1000, loop: int=0):
+
+def make_gif(
+    frame_folder: str | Path, output_file: Path, duration: int = 1000, loop: int = 0
+):
     jpg_paths = glob.glob(f"{frame_folder}/*.jpg")
     webp_paths = glob.glob(f"{frame_folder}/*.webp")
 
@@ -75,19 +83,25 @@ def make_gif(frame_folder: str | Path, output_file: Path, duration: int=1000, lo
         duration=duration,
         loop=loop,
     )
-    
+
+
 def compress_gif(image: str | Path, output_file: Path):
     im: Image.Image = Image.open(image)
 
-    output_width: int = int(im.width * 0.7) 
-    output_height: int = int(im.height * 0.7) 
+    output_width: int = int(im.width * 0.7)
+    output_height: int = int(im.height * 0.7)
 
     frames = ImageSequence.Iterator(im)
 
-    resized_frames = [frame.copy().resize((output_width, output_height), Image.LANCZOS) for frame in frames]
+    resized_frames = [
+        frame.copy().resize((output_width, output_height), Image.LANCZOS)
+        for frame in frames
+    ]
 
-    resized_frames[0].save(output_file, save_all=True, append_images=resized_frames[1:], loop=0, duration=im.info['duration'])
-
-    
-    
-    
+    resized_frames[0].save(
+        output_file,
+        save_all=True,
+        append_images=resized_frames[1:],
+        loop=0,
+        duration=im.info["duration"],
+    )

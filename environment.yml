@@ -5,8 +5,7 @@ channels:
   - defaults
 dependencies:
   - python
-  - pipreqs
-  - jupyter-black
+  - jupyterlab
   - httpx
   - graphviz
   - matplotlib

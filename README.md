@@ -80,19 +80,19 @@ Project Organization
     |   |   └── run_kmeans.py
     │   │
     │   │
-    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
+    │   └── visualization  <- Scripts to create exploratory and results-oriented visualizations
     │       └── gif_maker.py
     │       └── visualize.py
 
 
-Acknowledgements
+Acknowledgments
 --------
 Thank you to <a target="_blank" href="https://github.com/jwilber">Jared Wilber</a> and <a target="_blank" href="https://github.com/jwilber">Jacob Levernier</a> for helping me think through some of the pain points of the project.
 
 Disclaimer
 --------
 
-This project contains copyrighted material, the use of which has not been endorsed by America's Test Kitchen/Marquee Branchs. I believe my exploratory use meets the “fair use” prerequisite provided for in section 107 of the US Copyright Law. I do not claim ownership of any images and no images are for sale. The cover images shown are copyright by the original publisher.
+This project contains copyrighted material, the use of which has not been endorsed by America's Test Kitchen/Marquee Brands. I believe my exploratory use meets the “fair use” prerequisite provided for in section 107 of the US Copyright Law. I do not claim ownership of any images and no images are for sale. The cover images shown are copyrighted by the original publisher.
 
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>

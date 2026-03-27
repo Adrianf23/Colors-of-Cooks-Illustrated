@@ -14,15 +14,11 @@ Clone the repository
 - HTTPS: `git clone https://github.com/Adrianf23/Colors-of-Cooks-Illustrated.git`
 - SSH: `git clone git@github.com:Adrianf23/Colors-of-Cooks-Illustrated.git`
 
-Create an environment with conda-lock. I use micromamba, but you can substitute conda or mamba. 
-
-- `micromamba create -n [ENV_NAME] -c conda-forge conda-lock --yes`
-
-Download the necessary packages using conda-lock. 
+Create an environment with conda-lock and install the necessary packages. I use micromamba, but you can substitute conda or mamba. 
 
 > **Note**: this is cross-platform, but it will only work on linux-64, osx-64 and win-64. If you have osx-arm64 or another linux distro, then you cannot download this due to the _playwright_ dependency 
 
-- `conda-lock install --name [ENV_NAME_2] conda-lock.yml`
+- `micromamba create -n [ENV_NAME] -f conda-lock.yml`
 
 Download the images, run the KMeans algorithm and export the images as one final gif
 
